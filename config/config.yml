@@ -1,0 +1,12 @@
+security:
+    ip: 127.0.0.1
+server:
+    jar: craftbukkit.jar
+    path: /home/minecraft/minecraft
+    script: /etc/init.d/minecraft
+database:
+    host: localhost
+    port: 3306
+    username: root
+    password:
+    base: minecraft
