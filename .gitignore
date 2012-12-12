@@ -9,5 +9,5 @@ Desktop.ini
 
 composer.lock
 
-*/vendor/*
-*/cache/*
+vendor/
+cache/
