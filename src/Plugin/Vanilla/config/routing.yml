@@ -3,6 +3,9 @@ start: "/start"
 stop: "/stop"
 restart: "/restart"
 
+# GET : server's status
+status: /status
+
 # GET : list and number of online players
 players: "/players"
 
