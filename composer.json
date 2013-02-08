@@ -1,5 +1,5 @@
 {
-    "name": "Mopolo/MineREST",
+    "name": "mopolo/minerest",
     "description": "RESTfull API for Minecraft servers in PHP",
     "homepage": "http://github.com/Mopolo/MineREST",
     "license": "MIT",
