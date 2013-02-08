@@ -12,7 +12,6 @@ class Config {
     private static $instance;
     
     private $config;
-    private static $default;
     
     public static function getInstance() {
         if (self::$instance == null) {
@@ -22,34 +21,13 @@ class Config {
         return self::$instance;
     }
     
-    private function __construct() {
-        $this->config = require __DIR__ . '/../../cache/config.php';
-    }
-    
+    private function __construct() {}
     private function __clone() {}
 
-    public static function generateDefault() {
-        $default = array(
-            'security' => array(
-                'ip' => 'change this to your api client ip'
-            ),
-            'server' => array(
-                'jar' => 'craftbukkit.jar',
-                'path' => '/home/minecraft/minecraft',
-                'script' => '/etc/init.d/minecraft'
-            ),
-            'database' => array(
-                'host' => 'localhost',
-                'port' => 3306,
-                'username' => 'root',
-                'password' => '',
-                'base' => 'minecraft'
-            )
-        );
-
-        file_put_contents(__DIR__ . '/../../config/config.yml', Spyc::YAMLDump($default, 4));
-
-        Logger::addInfo('The main config file is missing. Writing a default one.');
+    public static function set($config) {
+        $_this = self::getInstance();
+        
+        $_this->config = $config;
     }
 
     public static function get($value, $default = null) {
@@ -60,9 +38,5 @@ class Config {
         }
 
         return $default;
-    }
-
-    public static function exists() {
-        return file_exists(__DIR__ . '/../../config/config.yml');
     }
 }

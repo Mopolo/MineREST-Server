@@ -57,35 +57,6 @@ class Cache {
                 }
             }
         }
-
-        if (!Config::exists()) Config::generateDefault();
-        
-        $config = Spyc::YAMLLoad(__DIR__ . '/../../config/config.yml');
-
-        $out = "<?php\n\n\$config = array(\n";
-        
-        /*
-        $out .= "\t'security.ips' => array(";
-        for ($i=0; $i < count($config['security']['ips']); $i++) { 
-            $config['security']['ips'][$i] = "'" . $config['security']['ips'][$i] . "'";
-        }
-
-        $out .= implode(', ', $config['security']['ips']) . "),\n";
-        */
-
-        $out .= "\t'security.ip' => '" . $config['security']['ip'] . "',\n";
-        $out .= "\t'server.jar' => '" . $config['server']['jar'] . "',\n";
-        $out .= "\t'server.path' => '" . $config['server']['path'] . "',\n";
-        $out .= "\t'server.script' => '" . $config['server']['script'] . "',\n";
-        $out .= "\t'database.host' => '" . $config['database']['host'] . "',\n";
-        $out .= "\t'database.port' => '" . $config['database']['port'] . "',\n";
-        $out .= "\t'database.username' => '" . $config['database']['username'] . "',\n";
-        $out .= "\t'database.password' => '" . $config['database']['password'] . "',\n";
-        $out .= "\t'database.base' => '" . $config['database']['base'] . "'\n";
-        
-        $out .= ");\n\nreturn \$config;\n\n?>";
-
-        file_put_contents(__DIR__ . '/../../cache/config.php', $out);
     }
 
     /**

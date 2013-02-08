@@ -8,8 +8,10 @@ use MineREST\HTTP\Response;
 class Kernel {
     private static $env;
 
-    public static function handle($env = 'prod') {
+    public static function handle($env = 'prod', $config) {
         self::$env = $env;
+
+        Config::set($config);
 
         // big badass try catch to send a JSON response if any error occurs
         try {
@@ -29,7 +31,10 @@ class Kernel {
                 $IP = $_SERVER['REMOTE_ADDR'];
             }
 
-            if ($IP != Config::get('security.ip', '127.0.0.1')) {
+            $ips = Config::get('security.ip', '127.0.0.1');
+            if (!is_array($ips)) $ips = array($ips);
+
+            if (!in_array($IP, $ips)) {
                 return new Response(Response::FORBIDDEN);
             }
 
