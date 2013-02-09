@@ -4,6 +4,7 @@ namespace MineREST;
 
 use Toro\Toro;
 use MineREST\HTTP\Response;
+use MineREST\Config;
 
 class Kernel {
     private static $env;
@@ -11,10 +12,9 @@ class Kernel {
     public static function handle($env = 'prod', $config) {
         self::$env = $env;
 
-        Config::set($config);
-
         // big badass try catch to send a JSON response if any error occurs
         try {
+            Config::set($config);
             // first we generate the cache if necessairy (dev environment or cache not created)
             $cache = new Cache();
             if (self::$env == 'dev' || !$cache->exists()) {

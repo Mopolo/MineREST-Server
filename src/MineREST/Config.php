@@ -26,7 +26,7 @@ class Config {
 
     public static function set($config) {
         $_this = self::getInstance();
-        
+
         $_this->config = $config;
     }
 
