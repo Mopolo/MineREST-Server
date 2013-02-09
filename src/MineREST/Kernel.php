@@ -15,6 +15,13 @@ class Kernel {
         // big badass try catch to send a JSON response if any error occurs
         try {
             Config::set($config);
+
+            if (Config::get('security.https', false) === true) {
+                if($_SERVER["HTTPS"] != "on") {
+                    return new Response(Response::ERROR, 'HTTPS is enabled.');
+                }
+            }
+
             // first we generate the cache if necessairy (dev environment or cache not created)
             $cache = new Cache();
             if (self::$env == 'dev' || !$cache->exists()) {
