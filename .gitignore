@@ -10,6 +10,6 @@ Desktop.ini
 composer.lock
 
 vendor/
-cache/
+logs/*
 
 .idea/*
