@@ -11,3 +11,5 @@ composer.lock
 
 vendor/
 cache/
+
+.idea/*
