@@ -16,7 +16,7 @@ class Vanilla
      * @Method("GET")
      */
     public function whitelistGet() {
-
+        echo 'get';
     }
 
     /**
@@ -24,7 +24,7 @@ class Vanilla
      * @Method("PUT")
      */
     public function whitelistAdd() {
-
+        echo 'add';
     }
 
     /**
@@ -32,6 +32,6 @@ class Vanilla
      * @Method("DELETE")
      */
     public function whitelistDelete() {
-
+        echo 'delete';
     }
 }
