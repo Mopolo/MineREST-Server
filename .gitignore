@@ -11,5 +11,7 @@ composer.lock
 
 vendor/
 logs/*
+cache/*
+web/*
 
 .idea/*
