@@ -7,6 +7,8 @@
  *
  */
 
+namespace MineREST;
+
 use Monolog\Logger as MonoLogger;
 use Monolog\Handler\StreamHandler;
 use MineREST\Kernel;

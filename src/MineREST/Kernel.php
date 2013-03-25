@@ -73,8 +73,20 @@ class Kernel
                     $reflection = new \ReflectionClass('MineREST\\Plugin\\' . $className);
 
                     foreach ($reflection->getMethods() as $method) {
-                        $ref = new ReflectionAnnotatedMethod('MineREST\\Plugin\\' . $className, $method->name);
-                        $out .= "\$routes['/$className" . $ref->getAnnotation('Route')->value . "']['" . strtoupper($ref->getAnnotation('Method')->value) . "'] = array('MineREST\\Plugin\\" . $className . '\', \'' . $method->name . "');\n";
+                        if ($method->class == 'MineREST\\Plugin\\' . $className && !preg_match('#__#', $method->name)) {
+                            $ref = new ReflectionAnnotatedMethod('MineREST\\Plugin\\' . $className, $method->name);
+                            $params = $ref->getAnnotation('Params');
+                            if ($params !== false) {
+                                $params = $params->value;
+                                for ($i = 0; $i < count($params); $i++) {
+                                    $params[$i] = "'" . $params[$i] . "'";
+                                }
+                                $params = implode(',', $params);
+                                $out .= "\$routes['/$className" . $ref->getAnnotation('Route')->value . "']['" . strtoupper($ref->getAnnotation('Method')->value) . "'] = array('MineREST\\Plugin\\" . $className . '\', \'' . $method->name . "', array(" . $params . "));\n";
+                            } else {
+                                $out .= "\$routes['/$className" . $ref->getAnnotation('Route')->value . "']['" . strtoupper($ref->getAnnotation('Method')->value) . "'] = array('MineREST\\Plugin\\" . $className . '\', \'' . $method->name . "');\n";
+                            }
+                        }
                     }
                 }
             }

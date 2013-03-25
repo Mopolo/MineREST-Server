@@ -10,6 +10,7 @@
 namespace MineREST\http;
 
 use MineREST\Exception\RouterException;
+use MineREST\Kernel;
 
 class Router
 {
@@ -26,13 +27,31 @@ class Router
 
         $routes = require __DIR__ . '/../../../cache/routes.php';
 
+        $plugin = null;
+
+        foreach ($routes as $url => $route) {
+            if (preg_match('#' . $url . '#', $requestUrl, $matches)) {
+                for ($i = 0; $i < count($route[strtoupper($requestMethod)][2]); $i++) {
+                    $_GET[$route[strtoupper($requestMethod)][2][$i]] = $matches[$i + 1];
+                }
+                $plugin = new $route[strtoupper($requestMethod)][0];
+                $plugin->setRequestMethod($requestMethod);
+                $method = $route[strtoupper($requestMethod)][1];
+                break;
+            }
+        }
+
         // error 404
-        if (!isset($routes[$requestUrl][strtoupper($requestMethod)])) {
+        if ($plugin == null) {
             throw new RouterException();
         }
 
-        $route = $routes[$requestUrl][strtoupper($requestMethod)];
+        $response = $plugin->$method();
 
-        call_user_func_array($route, array());
+        if (!($response instanceof Response) && Kernel::env() == 'prod') {
+            $response = new Response(Response::ERROR);
+        }
+
+        $response->send();
     }
 }
