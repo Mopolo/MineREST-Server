@@ -14,6 +14,10 @@ use MineREST\util\Config;
 
 class Vanilla extends MineRESTPlugin
 {
+    const GAMEMODE_SURVIVAL = 0;
+    const GAMEMODE_CREATIVE = 1;
+    const GAMEMODE_ADVENTURE = 2;
+
     private $players;
 
     public function __construct()
@@ -33,8 +37,63 @@ class Vanilla extends MineRESTPlugin
     }
 
     /**
+     * @Route('/start')
+     * @Method('GET')
+     */
+    public function start()
+    {
+        return $this->ok($this->init('start'));
+    }
+
+    /**
+     * @Route('/stop')
+     * @Method('GET')
+     */
+    public function stop()
+    {
+        return $this->ok($this->init('stop'));
+    }
+
+    /**
+     * @Route('/restart')
+     * @Method('GET')
+     */
+    public function restart()
+    {
+        return $this->ok($this->init('restart'));
+    }
+
+    /**
+     * @Route('/status')
+     * @Method('GET')
+     */
+    public function status()
+    {
+        if ($this->isRunning()) {
+            return $this->ok(array("status" => "on"));
+        }
+
+        return $this->ok(array("status" => "off"));
+    }
+
+    /**
+     * @Route('/logs/?([0-9]+)?')
+     * @Params({'lines'})
+     * @Method('GET')
+     */
+    public function getLogs()
+    {
+        if (!isset($this->data['lines'])) {
+            $this->data['lines'] = 30;
+        }
+
+        $logs = $this->shell('tail -n ' . $this->data['lines'] . ' ' . Config::get('server.path', '/home/minecraft/minecraft') . '/server.log');
+        return $this->ok(array('logs' => $logs));
+    }
+
+    /**
      * @Route('/whitelist')
-     * @Method("GET")
+     * @Method('GET')
      */
     public function whitelistGet()
     {
@@ -42,7 +101,7 @@ class Vanilla extends MineRESTPlugin
     }
 
     /**
-     * @Route("/whitelist")
+     * @Route('/whitelist')
      * @Method('PUT')
      */
     public function whitelistAdd()
@@ -68,8 +127,8 @@ class Vanilla extends MineRESTPlugin
     }
 
     /**
-     * @Route("/whitelist")
-     * @Method("DELETE")
+     * @Route('/whitelist')
+     * @Method('DELETE')
      */
     public function whitelistDelete()
     {
@@ -88,6 +147,52 @@ class Vanilla extends MineRESTPlugin
                 break;
             }
         }
+
+        return $this->ok();
+    }
+
+    /**
+     * @Route('/gamemode')
+     * @Method('POST')
+     */
+    public function setGamemode()
+    {
+        if (!$this->isRunning()) {
+            return $this->error("The server is not running");
+        }
+
+        if (!isset($this->data['player'])) {
+            return $this->error('Parameter missing: player');
+        }
+
+        if (!isset($this->data['gamemode'])) {
+            return $this->error('Parameter missing: gamemode');
+        }
+
+        $player = $this->data['player'];
+
+        switch ($this->data['gamemode']) {
+            case self::GAMEMODE_SURVIVAL:
+            case 'survival':
+                $gamemode = 'survival';
+                break;
+
+            case self::GAMEMODE_CREATIVE:
+            case 'creative':
+                $gamemode = 'creative';
+                break;
+
+            case self::GAMEMODE_ADVENTURE:
+            case 'adventure':
+                $gamemode = 'adventure';
+                break;
+
+            default:
+                $gamemode = 'survival';
+                break;
+        }
+
+        $this->minecraft("gamemode $gamemode $player");
 
         return $this->ok();
     }

@@ -45,6 +45,9 @@ class Response
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
 
+        // TODO sécurité à améliorer
+        header('Access-Control-Allow-Origin: *');
+
         $json = json_encode($this->data);
 
         if (Kernel::env() == 'dev') echo $this->json_format($json);
@@ -98,11 +101,6 @@ class Response
                         $new_json .= ": ";
                     } else {
                         $new_json .= $char;
-                    }
-                    break;
-                case '"':
-                    if ($c > 0 && $json[$c - 1] != '\\') {
-                        $in_string = !$in_string;
                     }
                     break;
                 default:

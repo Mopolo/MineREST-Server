@@ -80,7 +80,7 @@ class MineRESTPlugin
         return $this->database;
     }
 
-    public function setRequestMethod($request_method)
+    public function setRequestMethod($request_method, $data = null)
     {
         $this->request_method = $request_method;
 
@@ -96,6 +96,10 @@ class MineRESTPlugin
                 parse_str(file_get_contents('php://input'), $put_vars);
                 $this->data = $put_vars;
                 break;
+        }
+
+        if ($data != null) {
+            $this->data = array_merge($this->data, $data);
         }
     }
 

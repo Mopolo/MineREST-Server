@@ -28,14 +28,17 @@ class Router
         $routes = require __DIR__ . '/../../../cache/routes.php';
 
         $plugin = null;
+        $data = array();
 
         foreach ($routes as $url => $route) {
-            if (preg_match('#' . $url . '#', $requestUrl, $matches)) {
-                for ($i = 0; $i < count($route[strtoupper($requestMethod)][2]); $i++) {
-                    $_GET[$route[strtoupper($requestMethod)][2][$i]] = $matches[$i + 1];
+            if (preg_match('#' . $url . '#', $requestUrl, $matches) && isset($route[strtoupper($requestMethod)])) {
+                if (count($matches) > 1) {
+                    for ($i = 0; $i < count($route[strtoupper($requestMethod)][2]); $i++) {
+                        $data[$route[strtoupper($requestMethod)][2][$i]] = $matches[$i + 1];
+                    }
                 }
                 $plugin = new $route[strtoupper($requestMethod)][0];
-                $plugin->setRequestMethod($requestMethod);
+                $plugin->setRequestMethod($requestMethod, $data);
                 $method = $route[strtoupper($requestMethod)][1];
                 break;
             }
