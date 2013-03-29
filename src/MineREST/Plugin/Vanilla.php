@@ -64,16 +64,63 @@ class Vanilla extends MineRESTPlugin
     }
 
     /**
+     * @Route('/kill')
+     * @Method('GET')
+     */
+    public function kill()
+    {
+        return $this->ok($this->init('kill'));
+    }
+
+    /**
      * @Route('/status')
      * @Method('GET')
      */
     public function status()
     {
-        if ($this->isRunning()) {
-            return $this->ok(array("status" => "on"));
+        $query = array();
+
+        $beginning_time = microtime(true);
+
+        $socket = @fsockopen('localhost', 25566, $errno, $errstr, 30);
+
+        if ($socket) {
+            $end_time = microtime(true);
+
+            fwrite($socket, "QUERY\n");
+
+            $response = "";
+
+            while (!feof($socket)) {
+                $response .= fgets($socket, 1024);
+            }
+
+            $response = explode("\n", $response);
+
+            // Player count
+            $query['playerCount'] = explode(" ", $response[1], 2);
+            $query['playerCount'] = $query['playerCount'][1];
+
+            // Max players
+            $query['maxPlayers'] = explode(" ", $response[2], 2);
+            $query['maxPlayers'] = $query['maxPlayers'][1];
+
+            // Player list
+            $query['playerList'] = explode(" ", $response[3], 2);
+            $query['playerList'] = explode(", ", trim($query['playerList'][1], "[]"));
+
+            $query['latency'] = ($end_time - $beginning_time) * 1000;
         }
 
-        return $this->ok(array("status" => "off"));
+        if ($this->isRunning()) {
+            $query['status'] = 'on';
+            //return $this->ok(array("status" => "on"));
+        }
+
+        $query['status'] = 'off';
+        //return $this->ok(array("status" => "off"));
+
+        return $this->ok($query);
     }
 
     /**

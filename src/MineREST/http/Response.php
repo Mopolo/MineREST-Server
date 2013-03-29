@@ -10,6 +10,7 @@
 namespace MineREST\http;
 
 use MineREST\Kernel;
+use MineREST\util\Config;
 
 class Response
 {
@@ -45,8 +46,10 @@ class Response
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
 
-        // TODO sécurité à améliorer
-        header('Access-Control-Allow-Origin: *');
+        $origin = 'http';
+        if (Config::get('security.https', false)) $origin .= 's';
+        $origin .= '://' . Config::get('security.domain');
+        header('Access-Control-Allow-Origin: ' . $origin);
 
         $json = json_encode($this->data);
 
