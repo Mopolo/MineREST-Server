@@ -9,6 +9,7 @@
 
 namespace MineREST\Plugin;
 
+use MineREST\Kernel;
 use MineREST\MineRESTPlugin;
 use MineREST\util\Config;
 
@@ -34,6 +35,14 @@ class Vanilla extends MineRESTPlugin
                 if (substr($player, 0, 1) != '#' && strlen($player) > 0) $this->players[] = $player;
             }
         }
+    }
+
+    /**
+     * @Route('/ping')
+     * @Method('GET')
+     */
+    public function ping() {
+        return $this->ok(array('version' => Kernel::VERSION));
     }
 
     /**

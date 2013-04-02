@@ -17,6 +17,7 @@ use Addendum\ReflectionAnnotatedMethod;
 
 class Kernel
 {
+    const VERSION = '0.1';
     private static $env;
 
     public static function handle($config, $env = "prod")
