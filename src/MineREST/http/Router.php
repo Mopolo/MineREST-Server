@@ -18,8 +18,7 @@ class Router
     {
         // first we get the requested url and method
         $requestMethod = strtolower($_SERVER['REQUEST_METHOD']);
-        $requestUrl = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
-
+        $requestUrl = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
         // we need the cached routes
         if (!file_exists(__DIR__ . '/../../../cache/routes.php')) {
             throw new RouterException();
@@ -46,7 +45,7 @@ class Router
 
         // error 404
         if ($plugin == null) {
-            throw new RouterException();
+            throw new RouterException("Error 404");
         }
 
         $response = $plugin->$method();

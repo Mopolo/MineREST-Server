@@ -38,7 +38,6 @@ class Kernel
     private static function run($config, $env)
     {
         $envs = array("prod", "dev");
-
         if (!in_array($env, $envs)) {
             throw new KernelException("$env is not a valid environment value. Valid values are: " . implode(" ", $envs));
         }
