@@ -38,6 +38,7 @@ class Router
                 }
                 $plugin = new $route[strtoupper($requestMethod)][0];
                 $plugin->setRequestMethod($requestMethod, $data);
+                $plugin->setScript(Config::get('server.script', '/etc/init.d/minecraft'));
                 $method = $route[strtoupper($requestMethod)][1];
                 break;
             }

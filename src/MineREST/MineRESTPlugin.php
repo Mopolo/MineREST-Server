@@ -20,6 +20,10 @@ class MineRESTPlugin
     protected $request_method;
     protected $data = array();
 
+    public function setScript($script) {
+        $this->script = $script;
+    }
+
     // To execute a bash command
     // The & char is not allowed to avoid multiple commands
     protected function shell($cmd)
