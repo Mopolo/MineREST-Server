@@ -55,9 +55,11 @@ class MineRESTPlugin
     {
         $status = $this->init('status');
 
-        if ($status == Config::get('server.jar', 'craftbukkit.jar') . " is running.\n") return true;
+        if (strpos($status, 'is running') === false) {
+            return false;
+        }
 
-        return false;
+        return true;
     }
 
     protected function db()
