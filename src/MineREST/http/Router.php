@@ -11,6 +11,7 @@ namespace MineREST\http;
 
 use MineREST\Exception\RouterException;
 use MineREST\Kernel;
+use MineREST\util\Config;
 
 class Router
 {
