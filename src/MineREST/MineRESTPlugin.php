@@ -38,20 +38,20 @@ class MineRESTPlugin
     // To execute the init script
     protected function init($cmd)
     {
-        return $this->shell($this->script . ' ' . $cmd);
+        return $this->shell(Config::get('server.script') . ' ' . $cmd);
     }
 
     // To execute a Minecraft command in-game
     protected function minecraft($cmd)
     {
-        return $this->shell($this->script . ' command "' . $cmd . '"');
+        return $this->shell(Config::get('server.script') . ' command "' . $cmd . '"');
     }
 
     // To make the server talk
     protected function say($message)
     {
         $message = preg_replace("#'#", "'\''", $message);
-        return $this->shell($this->script . ' say "' . $message . '"');
+        return $this->shell(Config::get('server.script') . ' say "' . $message . '"');
     }
 
     // To get the server status

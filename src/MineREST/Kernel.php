@@ -39,7 +39,7 @@ class Kernel
     {
         $envs = array("prod", "dev");
         if (!in_array($env, $envs)) {
-            throw new KernelException("$env is not a valid environment value. Valid values are: " . implode(" ", $envs));
+            $env = "dev";
         }
 
         self::$env = $env;
@@ -47,7 +47,7 @@ class Kernel
         Config::set($config);
 
         if (Config::get('security.https', false) === true) {
-            if ($_SERVER["HTTPS"] != "on") {
+            if (!isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "on") {
                 throw new KernelException('SSL is mandatory.');
             }
         }
