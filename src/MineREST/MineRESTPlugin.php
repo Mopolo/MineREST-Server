@@ -44,14 +44,14 @@ class MineRESTPlugin
     // To execute a Minecraft command in-game
     protected function minecraft($cmd)
     {
-        return $this->shell(Config::get('server.script') . ' command "' . $cmd . '"');
+        return $this->init('command "' . $cmd . '"');
     }
 
     // To make the server talk
     protected function say($message)
     {
         $message = preg_replace("#'#", "'\''", $message);
-        return $this->shell(Config::get('server.script') . ' say "' . $message . '"');
+        return $this->init('say "' . $message . '"');
     }
 
     // To get the server status
