@@ -59,11 +59,11 @@ class MineRESTPlugin
     {
         $status = $this->init('status');
 
-        if (strpos($status, 'is running') === false) {
-            return false;
+        if ($status == Config::get('server.jar') . " is running.\n") {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     protected function db()

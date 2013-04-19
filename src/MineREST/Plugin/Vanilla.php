@@ -121,13 +121,11 @@ class Vanilla extends MineRESTPlugin
             $query['latency'] = ($end_time - $beginning_time) * 1000;
         }
 
-        if ($this->isRunning()) {
+        if ($this->isRunning() === true) {
             $query['status'] = 'on';
-            //return $this->ok(array("status" => "on"));
+        } else {
+            $query['status'] = 'off';
         }
-
-        $query['status'] = 'off';
-        //return $this->ok(array("status" => "off"));
 
         return $this->ok($query);
     }
