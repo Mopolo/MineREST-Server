@@ -60,7 +60,11 @@ class Kernel
             $IP = $_SERVER['REMOTE_ADDR'];
         }
 
-        if (Config::get('security.ip') != $IP) {
+        if (is_array(Config::get('security.ip'))) {
+            if (!in_array($IP, Config::get('security.ip'))) {
+                throw new ForbiddenAccessException();
+            }
+        } elseif (Config::get('security.ip') != $IP) {
             throw new ForbiddenAccessException();
         }
 

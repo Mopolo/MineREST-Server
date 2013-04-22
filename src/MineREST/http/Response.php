@@ -46,10 +46,11 @@ class Response
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Content-type: application/json');
 
-        $origin = 'http';
-        if (Config::get('security.https', false)) $origin .= 's';
-        $origin .= '://' . Config::get('security.domain');
-        header('Access-Control-Allow-Origin: ' . $origin);
+        if (Kernel::env() == 'dev') {
+            header('Access-Control-Allow-Origin: *');
+        } else {
+            header('Access-Control-Allow-Origin: ' . Config::get('security.domain'));
+        }
 
         $json = json_encode($this->data);
 
