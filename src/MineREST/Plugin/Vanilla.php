@@ -12,6 +12,7 @@ namespace MineREST\Plugin;
 use MineREST\Kernel;
 use MineREST\MineRESTPlugin;
 use MineREST\util\Config;
+use MineREST\util\Properties;
 use MinecraftQuery\MinecraftQuery;
 use MinecraftQuery\MinecraftQueryException;
 
@@ -139,10 +140,16 @@ class Vanilla extends MineRESTPlugin
      * @Method('GET')
      */
     public function infos() {
+        if (Properties::get('enable-query') == false) {
+            return $this->error('Query is not enabled.');
+        }
+
+        $port = Properties::get('query.port', 25565);
+
         $q = new minecraftQuery();
 
         try {
-            $q->connect('localhost', 25565, 3);
+            $q->connect('localhost', $port, 3);
             return $this->ok(array('infos' => $q->getInfo()));
         } catch (MinecraftQueryException $e) {
             return $this->error('Query error: ' . $e->getMessage());
