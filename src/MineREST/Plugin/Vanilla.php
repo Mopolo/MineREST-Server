@@ -12,6 +12,8 @@ namespace MineREST\Plugin;
 use MineREST\Kernel;
 use MineREST\MineRESTPlugin;
 use MineREST\util\Config;
+use MinecraftQuery\MinecraftQuery;
+use MinecraftQuery\MinecraftQueryException;
 
 class Vanilla extends MineRESTPlugin
 {
@@ -87,6 +89,7 @@ class Vanilla extends MineRESTPlugin
      */
     public function status()
     {
+        /*
         $query = array();
 
         $beginning_time = microtime(true);
@@ -120,6 +123,7 @@ class Vanilla extends MineRESTPlugin
 
             $query['latency'] = ($end_time - $beginning_time) * 1000;
         }
+        */
 
         if ($this->isRunning() === true) {
             $query['status'] = 'on';
@@ -128,6 +132,21 @@ class Vanilla extends MineRESTPlugin
         }
 
         return $this->ok($query);
+    }
+
+    /**
+     * @Route('/infos')
+     * @Method('GET')
+     */
+    public function infos() {
+        $q = new minecraftQuery();
+
+        try {
+            $q->connect('localhost', 25565, 3);
+            return $this->ok(array('infos' => $q->getInfo()));
+        } catch (MinecraftQueryException $e) {
+            return $this->error('Query error: ' . $e->getMessage());
+        }
     }
 
     /**
