@@ -48,7 +48,7 @@ class Kernel
 
         if (Config::get('security.https', false) === true) {
             if (!isset($_SERVER["HTTPS"]) || $_SERVER["HTTPS"] != "on") {
-                throw new KernelException('SSL is mandatory.');
+                throw new ForbiddenAccessException('SSL is mandatory.');
             }
         }
 
