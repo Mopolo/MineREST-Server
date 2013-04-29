@@ -15,6 +15,7 @@ use MineREST\util\Config;
 use MineREST\util\Properties;
 use MinecraftQuery\MinecraftQuery;
 use MinecraftQuery\MinecraftQueryException;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 class Vanilla extends MineRESTPlugin
 {
@@ -132,7 +133,10 @@ class Vanilla extends MineRESTPlugin
         }
 
         $logs = $this->shell('tail -n ' . $this->data['lines'] . ' ' . Config::get('server.path', '/home/minecraft/minecraft') . '/server.log');
-        return $this->ok(array('logs' => $logs));
+
+        $converter = new AnsiToHtmlConverter();
+
+        return $this->ok(array('logs' => $converter->convert($logs)));
     }
 
     /**
