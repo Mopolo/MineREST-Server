@@ -185,9 +185,37 @@ class Vanilla extends MineRESTPlugin
 
         $logs = implode("", array_reverse($lines));
 
-        $converter = new AnsiToHtmlConverter();
+        // date
+        $logs = preg_replace('#[0-9-]{10,10} #', '', $logs);
 
-        return $this->okHTML(nl2br($converter->convert($logs)));
+        // > and < are escaped
+        $logs = preg_replace('#>#', '&gt;', $logs);
+        $logs = preg_replace('#<#', '&lt;', $logs);
+
+        // console colors
+        $logs = preg_replace('#\[0;39m#', '</span><span class="console-0">$2', $logs);
+        $logs = preg_replace('#\[3([1-9a-f]{1,1});1m#', '</span><span class="console-$1">$2', $logs);
+        $logs = preg_replace('#\[3([1-9a-f]{1,1});22m#', '</span><span class="console-$1">$2', $logs);
+        $logs = preg_replace('#\[m#', '</span>', $logs);
+
+        // when a player executes a command it displays it in a nice way
+        $logs = preg_replace('#\[PLAYER_COMMAND\] ([0-9a-zA-Z-_]+): (.+)#', '// $1 <span class="console-a">$2</span>', $logs);
+        $logs = preg_replace('#([0-9a-zA-Z-_]+) issued server command: (.+)#', '// $1 <span class="console-a">$2</span>', $logs);
+
+        // WARNING in orange
+        $logs = preg_replace('#\[WARNING\]#', '[<span class="console-e">WARNING</span>]', $logs);
+
+        // SEVERE in red
+        $logs = preg_replace('#\[SEVERE\]#', '[<span class="console-1">SEVERE</span>]', $logs);
+
+        // highlights a wrong movement
+        $logs = preg_replace('#moved wrongly#', '<span class="console-4">moved wrongly</span>', $logs);
+
+        // login and logout
+        $logs = preg_replace('#([0-9a-zA-Z-_]+) lost connection: (.+)#', '<span class="console-e">&lt;&lt; <span class="console-3">$1</span> logged out</span>', $logs);
+        $logs = preg_replace('#([0-9a-zA-Z-_]+)\[/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}\] logged in with entity id ([0-9]+) at (.+)#', '<span class="console-e">&gt;&gt; <span class="console-3">$1</span> logged in.</span>', $logs);
+
+        return $this->okHTML(nl2br($logs));
     }
 
     /**
