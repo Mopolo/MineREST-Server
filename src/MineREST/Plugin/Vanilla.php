@@ -45,7 +45,8 @@ class Vanilla extends MineRESTPlugin
      * @Route('/ping')
      * @Method('GET')
      */
-    public function ping() {
+    public function ping()
+    {
         return $this->ok(array('version' => Kernel::VERSION));
     }
 
@@ -104,7 +105,8 @@ class Vanilla extends MineRESTPlugin
      * @Route('/infos')
      * @Method('GET')
      */
-    public function infos() {
+    public function infos()
+    {
         if (Properties::get('enable-query') == false) {
             return $this->error('Query is not enabled.');
         }
@@ -132,11 +134,60 @@ class Vanilla extends MineRESTPlugin
             $this->data['lines'] = 30;
         }
 
-        $logs = $this->shell('tail -n ' . $this->data['lines'] . ' ' . Config::get('server.path', '/home/minecraft/minecraft') . '/server.log');
+        $filename = realpath(Config::get('server.path', '/home/minecraft/minecraft') . '/server.log');
+        $lines_to_display = $this->data['lines'];
+
+        if (!$open_file = fopen($filename, 'r')) {
+            return false;
+        }
+
+        $pointer = -2; // Ignore new line characters at the end of the file
+        $char = '';
+        $beginning_of_file = false;
+        $lines = array();
+
+        for ($i = 1; $i <= $lines_to_display; $i++) {
+            if ($beginning_of_file == true) {
+                continue;
+            }
+
+            /**
+             * Starting at the end of the file, move the pointer back one
+             * character at a time until it lands on a new line sequence.
+             */
+            while ($char != "\n") {
+                // If the beginning of the file is passed
+                if (fseek($open_file, $pointer, SEEK_END) < 0) {
+                    $beginning_of_file = true;
+                    // Move the pointer to the first character
+                    rewind($open_file);
+                    break;
+                }
+
+                // Subtract one character from the pointer position
+                $pointer--;
+
+                // Move the pointer relative to the end of the file
+                fseek($open_file, $pointer, SEEK_END);
+
+                // Get the current character at the pointer
+                $char = fgetc($open_file);
+            }
+
+            array_push($lines, fgets($open_file));
+
+            // Reset the character.
+            $char = '';
+        }
+
+        // Close the file.
+        fclose($open_file);
+
+        $logs = implode("", array_reverse($lines));
 
         $converter = new AnsiToHtmlConverter();
 
-        return $this->ok(array('logs' => $converter->convert($logs)));
+        return $this->okHTML($converter->convert($logs));
     }
 
     /**

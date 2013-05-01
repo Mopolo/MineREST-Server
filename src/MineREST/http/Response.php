@@ -20,12 +20,21 @@ class Response
     const ERROR = 500;
 
     private $data = array();
+    private $html;
 
-    public function __construct($status = self::OK, $data = null)
+    /**
+     * @param int $status HTTP status
+     * @param null $data A php array that will be converted in json
+     * @param bool $html  - If true, the response will be a string
+     *                    - If false, the response will be in json
+     */
+    public function __construct($status = self::OK, $data = null, $html = false)
     {
         $this->data = array(
             'status' => $status
         );
+
+        $this->html = $html;
 
         if ($status == self::ERROR || $status == self::NOT_FOUND) {
             if ($data == null) $data = 'An unknown error occured.';
@@ -42,20 +51,23 @@ class Response
             exit('Forbidden');
         }
 
-        header('Cache-Control: no-cache, must-revalidate');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Content-type: application/json');
-
         if (Kernel::env() == 'dev') {
             header('Access-Control-Allow-Origin: *');
         } else {
             header('Access-Control-Allow-Origin: ' . Config::get('security.domain'));
         }
 
-        $json = json_encode($this->data);
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        if ($this->html === false) {
+            header('Content-type: application/json');
+            $json = json_encode($this->data);
+            if (Kernel::env() == 'dev') echo $this->json_format($json);
+            else echo $json;
+            return;
+        }
 
-        if (Kernel::env() == 'dev') echo $this->json_format($json);
-        else echo $json;
+        echo $this->data['data'];
     }
 
     private function json_format($json)

@@ -120,6 +120,10 @@ class MineRESTPlugin
         return new Response(Response::OK, $data);
     }
 
+    protected function okHTML($html) {
+        return new Response(Response::OK, $html, true);
+    }
+
     // This method return an instance of MineREST\http\Response
     // Use it for requests with errors
     protected function error($message)
