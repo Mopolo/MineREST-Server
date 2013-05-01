@@ -107,20 +107,58 @@ class Vanilla extends MineRESTPlugin
      */
     public function infos()
     {
-        if (Properties::get('enable-query') == false) {
+        if (Properties::get('enable-query') == 'false') {
             return $this->error('Query is not enabled.');
         }
 
-        $port = Properties::get('query.port', 25565);
-
-        $q = new minecraftQuery();
-
-        try {
-            $q->connect('localhost', $port, 3);
-            return $this->ok(array('infos' => $q->getInfo()));
-        } catch (MinecraftQueryException $e) {
-            return $this->error('Query error: ' . $e->getMessage());
+        if (Config::get('server.ip', false) === false) {
+            return $this->error("server.ip must be configured!");
         }
+
+        $timeout = 2;
+
+        $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+        socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, array('sec' => (int)$timeout, 'usec' => 0));
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => (int)$timeout, 'usec' => 0));
+
+        if ($socket === false || @socket_connect($socket, Config::get('server.ip'), (int)$port) === false) {
+            return $this->error("Querry error");
+        }
+
+        socket_send($socket, "\xFE\x01", 2, 0);
+        $len = socket_recv($socket, $data, 512, 0);
+        socket_close($socket);
+
+        if ($len < 4 || $data[0] !== "\xFF") {
+            return $this->error("Querry empty");
+        }
+
+        $data = substr($data, 3); // Strip packet header (kick message packet and short length)
+        $data = iconv('UTF-16BE', 'UTF-8', $data);
+
+        // Are we dealing with Minecraft 1.4+ server?
+        if ($data[1] === "\xA7" && $data[2] === "\x31") {
+            $data = explode("\x00", $data);
+            $infos = array(
+                'motd' => $data[3],
+                'players' => intval($data[4]),
+                'maxplayers' => intval($data[5]),
+                'protocol' => intval($data[1]),
+                'version' => $data[2]
+            );
+        } else {
+            $data = explode("\xA7", $data);
+            $infos = array(
+                'motd' => substr($data[0], 0, -1),
+                'players' => isset($data[1]) ? intval($data[1]) : 0,
+                'maxplayers' => isset($data[2]) ? intval($data[2]) : 0,
+                'protocol' => 0,
+                'version' => '1.3'
+            );
+        }
+
+        return $this->ok($infos);
     }
 
     /**
