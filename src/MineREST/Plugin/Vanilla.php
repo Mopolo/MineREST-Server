@@ -187,7 +187,7 @@ class Vanilla extends MineRESTPlugin
 
         $converter = new AnsiToHtmlConverter();
 
-        return $this->okHTML($converter->convert($logs));
+        return $this->okHTML(nl2br($converter->convert($logs)));
     }
 
     /**
