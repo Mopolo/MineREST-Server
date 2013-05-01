@@ -122,7 +122,7 @@ class Vanilla extends MineRESTPlugin
         socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, array('sec' => (int)$timeout, 'usec' => 0));
         socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => (int)$timeout, 'usec' => 0));
 
-        if ($socket === false || @socket_connect($socket, Config::get('server.ip'), (int)$port) === false) {
+        if ($socket === false || @socket_connect($socket, Config::get('server.ip'), 25565) === false) {
             return $this->error("Querry error");
         }
 
